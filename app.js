@@ -969,8 +969,8 @@ accounts, so the QR below cannot make GCash/Maya
 auto-fill a transfer — see the on-screen disclaimer.
 */
 const PAYMENT_ACCOUNTS = {
-    gcash: { number: "09161450983", name: "FoodSprint", label: "📱 GCash Payment" },
-    maya: { number: "09310318357", name: "FoodSprint", label: "🟢 Maya Payment" }
+    gcash: { number: "09123456789", name: "FoodSprint", label: "📱 GCash Payment" },
+    maya: { number: "09123456789", name: "FoodSprint", label: "🟢 Maya Payment" }
 };
 
 let pendingOrderRef = "";
