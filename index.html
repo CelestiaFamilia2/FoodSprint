@@ -273,6 +273,8 @@
 
         <div class="order-modal">
 
+            <div class="modal-scroll">
+
             <div class="success-icon">
                 ✓
             </div>
@@ -296,6 +298,8 @@
 
             </button>
 
+            </div>
+
         </div>
 
     </div>
@@ -306,6 +310,8 @@
     <div class="modal-overlay" id="paymentInputModal">
 
         <div class="order-modal">
+
+            <div class="modal-scroll">
 
             <h2 id="paymentModalTitle">Payment Details</h2>
 
@@ -319,6 +325,8 @@
             <div style="display: flex; gap: 10px;">
                 <button id="confirmPaymentBtn" class="modal-button" style="flex: 1;">Confirm & Pay</button>
                 <button id="cancelPaymentBtn" class="clear-btn" style="flex: 1; margin-top: 0;">Cancel</button>
+            </div>
+
             </div>
 
         </div>
@@ -338,6 +346,8 @@
     <div class="modal-overlay" id="paypalModal">
 
         <div class="order-modal paypal-modal">
+
+            <div class="modal-scroll">
 
             <!-- Screen 1: Redirecting -->
             <div class="paypal-screen active" id="paypalRedirectScreen">
@@ -410,6 +420,8 @@
 
             </div>
 
+            </div>
+
         </div>
 
     </div>
@@ -420,6 +432,8 @@
     <div class="modal-overlay" id="qrPaymentModal">
 
         <div class="order-modal qr-modal">
+
+            <div class="modal-scroll">
 
             <!-- Main content: QR, account details, receipt upload -->
             <div class="qr-screen active" id="qrMainContent">
@@ -457,7 +471,7 @@
                 </div>
 
                 <p class="qr-note">
-                    ⚠️ Demo QR — not linked to a real merchant account, so scanning it won't auto-fill the transfer in the app. Enter the number and amount above manually to pay. For real auto-fill, the site owner must use a licensed payment gateway or their own official app-issued QR.
+                    ⚠️ Demo QR — not linked to a real merchant account.
                 </p>
 
                 <div class="receipt-upload">
@@ -485,6 +499,8 @@
                 <div class="qr-verify-icon" id="qrVerifyIcon" style="display:none;">✅</div>
 
                 <p class="qr-verify-text" id="qrVerifyingText">Verifying your payment with GCash...</p>
+
+            </div>
 
             </div>
 
