@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FoodSprint</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <div class="logo-section">
+            <div class="logo">🍽️</div>
+
+            <div>
+                <h1>FoodSprint</h1>
+                <p>Delicious food delivered with love.</p>
+            </div>
+        </div>
+
+        <button class="cart-btn" id="cartButton">
+            🛒 Cart
+            <span id="cartCount">0</span>
+        </button>
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+
+        <div class="hero-content">
+            <span class="hero-badge">🔥 Fresh & Delicious</span>
+
+            <h2>
+                Crave It. Order It.
+                <span>Love It.</span>
+            </h2>
+
+            <p>
+                Choose from our delicious food, refreshing drinks,
+                and sweet desserts.
+            </p>
+
+            <a href="#menu" class="order-btn">
+                Order Now
+            </a>
+        </div>
+
+        <div class="hero-emoji">
+            🍔
+        </div>
+
+    </section>
+
+
+    <!-- ================= MAIN ================= -->
+    <main id="menu">
+
+        <section class="menu-section">
+
+            <div class="section-heading">
+                <span>OUR MENU</span>
+                <h2>What would you like today?</h2>
+                <p>Select your favorite items and add them to your order.</p>
+            </div>
+
+
+            <!-- CATEGORY FILTER -->
+            <div class="category-buttons">
+
+                <button
+                    class="category-btn active"
+                    data-category="all">
+                    🍽️ All
+                </button>
+
+                <button
+                    class="category-btn"
+                    data-category="food">
+                    🍔 Food
+                </button>
+
+                <button
+                    class="category-btn"
+                    data-category="drink">
+                    🥤 Drinks
+                </button>
+
+                <button
+                    class="category-btn"
+                    data-category="dessert">
+                    🍰 Desserts
+                </button>
+
+            </div>
+
+
+            <!-- MENU ITEMS -->
+            <div
+                class="menu-grid"
+                id="menuContainer">
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= CART SIDEBAR ================= -->
+
+    <div
+        class="cart-overlay"
+        id="cartOverlay">
+    </div>
+
+    <aside
+        class="cart-sidebar"
+        id="cartSidebar">
+
+        <div class="cart-header">
+
+            <div>
+                <h2>🛒 Your Order</h2>
+                <p>Review your selected items</p>
+            </div>
+
+            <button
+                class="close-cart"
+                id="closeCart">
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            class="cart-items"
+            id="cartItems">
+        </div>
+
+
+        <div class="cart-bottom">
+
+            <div class="cart-summary">
+
+                <div>
+                    <span>Subtotal</span>
+                    <span id="subtotal">₱0.00</span>
+                </div>
+
+                <div>
+                    <span>Delivery Fee</span>
+                    <span id="deliveryFee">₱0.00</span>
+                </div>
+
+                <div class="total-row">
+                    <strong>Total</strong>
+                    <strong id="totalPrice">₱0.00</strong>
+                </div>
+
+            </div>
+
+
+            <!-- PAYMENT STRATEGY -->
+
+            <div class="payment-section">
+
+                <h3>Payment Method</h3>
+
+                <div class="payment-options">
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="payment"
+                            value="cash"
+                            checked>
+
+                        <span>
+                            💵 Cash
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="payment"
+                            value="gcash">
+
+                        <span>
+                            📱 GCash
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="payment"
+                            value="maya">
+
+                        <span>
+                            💳 Maya
+                        </span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="payment"
+                            value="paypal">
+
+                        <span>
+                            🅿️ PayPal
+                        </span>
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="checkoutButton"
+                class="checkout-btn">
+
+                Place Order
+
+            </button>
+
+            <button
+                id="clearCartButton"
+                class="clear-btn">
+
+                Clear Cart
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= ORDER MODAL ================= -->
+
+    <div
+        class="modal-overlay"
+        id="orderModal">
+
+        <div class="order-modal">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h2>Order Successful!</h2>
+
+            <p id="orderMessage">
+                Thank you for ordering.
+            </p>
+
+            <div
+                class="order-summary"
+                id="finalOrderSummary">
+            </div>
+
+            <button
+                id="closeModal"
+                class="modal-button">
+
+                Done
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= PAYMENT INPUT MODAL ================= -->
+
+    <div class="modal-overlay" id="paymentInputModal">
+
+        <div class="order-modal">
+
+            <h2 id="paymentModalTitle">Payment Details</h2>
+
+            <p id="paymentModalInstruction">Please provide your details.</p>
+
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label id="paymentInputLabel" style="font-size: 14px; font-weight: bold; display: block; margin-bottom: 8px;">Detail:</label>
+                <input type="text" id="paymentInputVal" placeholder="" style="width: 100%; padding: 12px; border: 2px solid var(--secondary); border-radius: 10px; font-size: 15px; outline: none;">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button id="confirmPaymentBtn" class="modal-button" style="flex: 1;">Confirm & Pay</button>
+                <button id="cancelPaymentBtn" class="clear-btn" style="flex: 1; margin-top: 0;">Cancel</button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <div>
+            <h3>🍽️ FoodSprint</h3>
+            <p>
+                Delicious food made just for you.
+            </p>
+        </div>
+
+        <p class="developer">
+            Developed by <strong>Team Light</strong>
+        </p>
+
+    </footer>
+
+
+    <!-- JAVASCRIPT FILES -->
+
+    <script src="factory.js"></script>
+    <script src="singleton.js"></script>
+    <script src="strategy.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>
