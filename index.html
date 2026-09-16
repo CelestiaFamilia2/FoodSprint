@@ -165,6 +165,27 @@
             </div>
 
 
+            <!-- DELIVERY ADDRESS -->
+
+            <div class="delivery-section">
+
+                <h3>📍 Delivery Address</h3>
+
+                <textarea
+                    id="deliveryAddress"
+                    class="delivery-input"
+                    rows="2"
+                    placeholder="House/Unit No., Street, Barangay, City"></textarea>
+
+                <span
+                    id="deliveryAddressError"
+                    class="delivery-error">
+                    Please enter your delivery address.
+                </span>
+
+            </div>
+
+
             <!-- PAYMENT STRATEGY -->
 
             <div class="payment-section">
@@ -305,6 +326,173 @@
     </div>
 
 
+    <!-- ================= SIMULATED PAYPAL CHECKOUT MODAL ================= -->
+    <!--
+        Mimics the real PayPal redirect flow:
+        1) "Redirecting to PayPal..." transition
+        2) Fake PayPal login screen
+        3) Fake PayPal "Review your payment" / Pay Now screen
+        No real PayPal integration — for demo purposes only.
+    -->
+
+    <div class="modal-overlay" id="paypalModal">
+
+        <div class="order-modal paypal-modal">
+
+            <!-- Screen 1: Redirecting -->
+            <div class="paypal-screen active" id="paypalRedirectScreen">
+
+                <div class="paypal-logo">Pay<span>Pal</span></div>
+
+                <div class="paypal-spinner"></div>
+
+                <p class="paypal-redirect-text">Redirecting you to PayPal...</p>
+
+            </div>
+
+            <!-- Screen 2: Login -->
+            <div class="paypal-screen" id="paypalLoginScreen">
+
+                <div class="paypal-logo">Pay<span>Pal</span></div>
+
+                <p class="paypal-subtitle">Log in to your PayPal account to complete your purchase</p>
+
+                <div class="paypal-field">
+                    <label for="paypalEmailInput">Email or mobile number</label>
+                    <input type="email" id="paypalEmailInput" placeholder="name@example.com">
+                </div>
+
+                <div class="paypal-field">
+                    <label for="paypalPasswordInput">Password</label>
+                    <input type="password" id="paypalPasswordInput" placeholder="Password">
+                </div>
+
+                <button id="paypalLoginBtn" class="paypal-btn paypal-btn-blue">Log In</button>
+                <button id="paypalCancelLoginBtn" class="paypal-link-btn">Cancel and return to FoodSprint</button>
+
+                <p class="paypal-disclaimer">⚠️ Simulated PayPal screen for demo purposes — this is not the real PayPal site. Please don't enter real credentials.</p>
+
+            </div>
+
+            <!-- Screen 3: Review & Pay -->
+            <div class="paypal-screen" id="paypalReviewScreen">
+
+                <div class="paypal-logo">Pay<span>Pal</span></div>
+
+                <p class="paypal-subtitle">Review your payment</p>
+
+                <div class="paypal-review-box">
+
+                    <div class="paypal-review-row">
+                        <span>Merchant</span>
+                        <strong>FoodSprint</strong>
+                    </div>
+
+                    <div class="paypal-review-row">
+                        <span>Pay with</span>
+                        <strong id="paypalReviewEmail">—</strong>
+                    </div>
+
+                    <div class="paypal-review-row">
+                        <span>Deliver to</span>
+                        <strong id="paypalReviewAddress">—</strong>
+                    </div>
+
+                    <div class="paypal-review-row paypal-review-total">
+                        <span>Total</span>
+                        <strong id="paypalReviewAmount">₱0.00</strong>
+                    </div>
+
+                </div>
+
+                <button id="paypalPayNowBtn" class="paypal-btn paypal-btn-yellow">Pay Now</button>
+                <button id="paypalCancelReviewBtn" class="paypal-link-btn">Cancel and return to FoodSprint</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= QR PAYMENT MODAL (GCASH / MAYA) ================= -->
+
+    <div class="modal-overlay" id="qrPaymentModal">
+
+        <div class="order-modal qr-modal">
+
+            <!-- Main content: QR, account details, receipt upload -->
+            <div class="qr-screen active" id="qrMainContent">
+
+                <h2 id="qrModalTitle">📱 GCash Payment</h2>
+                <p id="qrModalAmount">Amount to pay: ₱0.00</p>
+
+                <div class="qr-wrapper">
+                    <div id="qrCodeCanvas"></div>
+                    <span class="qr-caption">Scan with your GCash / Maya app camera</span>
+                </div>
+
+                <div class="qr-account-details">
+
+                    <div class="qr-detail-row">
+                        <span>Send to Number</span>
+                        <strong id="qrAccountNumber">—</strong>
+                    </div>
+
+                    <div class="qr-detail-row">
+                        <span>Account Name</span>
+                        <strong id="qrAccountName">FoodSprint</strong>
+                    </div>
+
+                    <div class="qr-detail-row">
+                        <span>Amount</span>
+                        <strong id="qrAccountAmount">₱0.00</strong>
+                    </div>
+
+                    <div class="qr-detail-row">
+                        <span>Reference No.</span>
+                        <strong id="qrRefNumber">—</strong>
+                    </div>
+
+                </div>
+
+                <p class="qr-note">
+                    ⚠️ Demo QR — not linked to a real merchant account, so scanning it won't auto-fill the transfer in the app. Enter the number and amount above manually to pay. For real auto-fill, the site owner must use a licensed payment gateway or their own official app-issued QR.
+                </p>
+
+                <div class="receipt-upload">
+                    <label for="receiptInput" class="receipt-label">📎 Upload your payment receipt / screenshot</label>
+                    <input type="file" id="receiptInput" accept="image/*">
+
+                    <div id="receiptPreviewWrapper" class="receipt-preview-wrapper" style="display:none;">
+                        <img id="receiptPreview" class="receipt-preview" alt="Uploaded receipt preview">
+                        <button type="button" id="removeReceiptBtn" class="remove-receipt-btn">✕ Remove receipt</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 16px;">
+                    <button id="confirmQrPaymentBtn" class="modal-button" style="flex: 1;" disabled>Confirm & Submit Order</button>
+                    <button id="cancelQrPaymentBtn" class="clear-btn" style="flex: 1; margin-top: 0;">Cancel</button>
+                </div>
+
+            </div>
+
+            <!-- Verifying / confirmed screen: simulates a payment gateway webhook checking the transaction -->
+            <div class="qr-screen" id="qrVerifyingScreen">
+
+                <div class="qr-spinner" id="qrVerifyingSpinner"></div>
+
+                <div class="qr-verify-icon" id="qrVerifyIcon" style="display:none;">✅</div>
+
+                <p class="qr-verify-text" id="qrVerifyingText">Verifying your payment with GCash...</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
     <!-- ================= FOOTER ================= -->
 
     <footer>
@@ -325,6 +513,7 @@
 
     <!-- JAVASCRIPT FILES -->
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="factory.js"></script>
     <script src="singleton.js"></script>
     <script src="strategy.js"></script>

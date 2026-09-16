@@ -111,11 +111,96 @@ const categoryButtons =
     );
 
 
+const deliveryAddressInput =
+    document.getElementById(
+        "deliveryAddress"
+    );
+
+
+const deliveryAddressError =
+    document.getElementById(
+        "deliveryAddressError"
+    );
+
+
 /* ==========================================
    SETTINGS
 ========================================== */
 
 const DELIVERY_FEE = 40;
+
+
+/* ==========================================
+   DELIVERY ADDRESS
+========================================== */
+
+// Prefill with the last address the customer used, if any
+const savedAddress =
+    localStorage.getItem("lastDeliveryAddress");
+
+if (savedAddress) {
+
+    deliveryAddressInput.value = savedAddress;
+
+}
+
+// Clear the error state as soon as the user starts typing
+deliveryAddressInput.addEventListener("input", () => {
+
+    if (deliveryAddressInput.value.trim()) {
+
+        deliveryAddressInput.classList.remove("input-error");
+        deliveryAddressError.classList.remove("visible");
+
+    }
+
+});
+
+function getDeliveryAddress() {
+
+    return deliveryAddressInput.value.trim();
+
+}
+
+function validateDeliveryAddress() {
+
+    const address = getDeliveryAddress();
+
+    if (!address) {
+
+        deliveryAddressInput.classList.add("input-error");
+        deliveryAddressError.classList.add("visible");
+
+        deliveryAddressInput.focus();
+
+        return false;
+
+    }
+
+    deliveryAddressInput.classList.remove("input-error");
+    deliveryAddressError.classList.remove("visible");
+
+    return true;
+
+}
+
+
+/* ==========================================
+   ESCAPE HTML
+   (delivery address is free-text user input
+   and gets inserted via innerHTML, so it
+   needs to be escaped first)
+========================================== */
+
+function escapeHtml(text) {
+
+    const div = document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+
+}
 
 
 /* ==========================================
@@ -776,6 +861,7 @@ const cancelPaymentBtn = document.getElementById("cancelPaymentBtn");
 let pendingTotal = 0;
 let pendingItems = [];
 let pendingStrategy = null;
+let pendingAddress = "";
 let currentSelectedPaymentType = "";
 
 checkoutButton.addEventListener(
@@ -788,44 +874,32 @@ checkoutButton.addEventListener(
             return;
         }
 
+        if (!validateDeliveryAddress()) {
+            return;
+        }
+
         const subtotal = cart.getSubtotal();
         pendingTotal = subtotal + DELIVERY_FEE;
         pendingItems = items;
         pendingStrategy = getSelectedPaymentStrategy();
+        pendingAddress = getDeliveryAddress();
 
         currentSelectedPaymentType = document.querySelector('input[name="payment"]:checked').value;
 
-        // If GCash, Maya, or PayPal, open modal to collect account details. Cash passes through immediately.
-        if (currentSelectedPaymentType === "gcash" || currentSelectedPaymentType === "maya" || currentSelectedPaymentType === "paypal") {
-            if (paymentInputModal) {
-                paymentInputModal.classList.add("active");
-                paymentInputVal.value = ""; // clear old inputs
-
-                if (currentSelectedPaymentType === "gcash") {
-                    paymentModalTitle.textContent = "📱 GCash Checkout";
-                    paymentModalInstruction.textContent = `Total amount due: ₱${pendingTotal.toFixed(2)}`;
-                    paymentInputLabel.textContent = "Enter GCash Mobile Number (11 digits):";
-                    paymentInputVal.placeholder = "e.g., 09123456789";
-                    paymentInputVal.type = "tel";
-                } else if (currentSelectedPaymentType === "maya") {
-                    paymentModalTitle.textContent = "🟢 Maya Checkout";
-                    paymentModalInstruction.textContent = `Total amount due: ₱${pendingTotal.toFixed(2)}`;
-                    paymentInputLabel.textContent = "Enter Maya Mobile Number (11 digits):";
-                    paymentInputVal.placeholder = "e.g., 09123456789";
-                    paymentInputVal.type = "tel";
-                } else {
-                    paymentModalTitle.textContent = "🅿️ PayPal Checkout";
-                    paymentModalInstruction.textContent = `Total amount due: ₱${pendingTotal.toFixed(2)}`;
-                    paymentInputLabel.textContent = "Enter PayPal Email Address:";
-                    paymentInputVal.placeholder = "e.g., name@example.com";
-                    paymentInputVal.type = "email";
-                }
-            } else {
-                finalizeOrder("");
-            }
-        } else {
-            finalizeOrder("");
+        // GCash / Maya: show payment QR + manual transfer details + receipt upload
+        if (currentSelectedPaymentType === "gcash" || currentSelectedPaymentType === "maya") {
+            openQrPaymentModal(currentSelectedPaymentType, pendingTotal);
+            return;
         }
+
+        // PayPal: simulate the real redirect -> login -> review/pay flow
+        if (currentSelectedPaymentType === "paypal") {
+            openFakePaypalCheckout(pendingTotal);
+            return;
+        }
+
+        // Cash: finalize immediately
+        finalizeOrder({});
     }
 );
 
@@ -839,29 +913,239 @@ if (confirmPaymentBtn) {
             return;
         }
 
-        // Validation rule for GCash and Maya: must be exactly 11 digits and contain no letters or symbols
-        if (currentSelectedPaymentType === "gcash" || currentSelectedPaymentType === "maya") {
-            const isNumeric = /^\d+$/.test(detailValue);
-            if (!isNumeric || detailValue.length !== 11) {
-                const walletName = currentSelectedPaymentType === "gcash" ? "GCash" : "Maya";
-                alert(`Invalid ${walletName} number! Please enter exactly 11 numeric digits (e.g., 09123456789). Words or incomplete numbers are not allowed.`);
-                return;
-            }
-        }
-
         // Validation rule for PayPal: must look like a valid email address
-        if (currentSelectedPaymentType === "paypal") {
-            const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(detailValue);
-            if (!isValidEmail) {
-                alert("Invalid PayPal email! Please enter a valid email address (e.g., name@example.com).");
-                return;
-            }
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(detailValue);
+        if (!isValidEmail) {
+            alert("Invalid PayPal email! Please enter a valid email address (e.g., name@example.com).");
+            return;
         }
 
         paymentInputModal.classList.remove("active");
-        finalizeOrder(detailValue);
+        finalizeOrder({ extraDetail: detailValue });
     };
 }
+
+
+/* ==========================================
+   GCASH / MAYA — QR PAYMENT + RECEIPT UPLOAD
+========================================== */
+
+const qrPaymentModal = document.getElementById("qrPaymentModal");
+const qrModalTitle = document.getElementById("qrModalTitle");
+const qrModalAmount = document.getElementById("qrModalAmount");
+const qrCodeCanvas = document.getElementById("qrCodeCanvas");
+const qrAccountNumber = document.getElementById("qrAccountNumber");
+const qrAccountName = document.getElementById("qrAccountName");
+const qrAccountAmount = document.getElementById("qrAccountAmount");
+const qrRefNumber = document.getElementById("qrRefNumber");
+const receiptInput = document.getElementById("receiptInput");
+const receiptPreviewWrapper = document.getElementById("receiptPreviewWrapper");
+const receiptPreview = document.getElementById("receiptPreview");
+const removeReceiptBtn = document.getElementById("removeReceiptBtn");
+const confirmQrPaymentBtn = document.getElementById("confirmQrPaymentBtn");
+const cancelQrPaymentBtn = document.getElementById("cancelQrPaymentBtn");
+const qrMainContent = document.getElementById("qrMainContent");
+const qrVerifyingScreen = document.getElementById("qrVerifyingScreen");
+const qrVerifyingSpinner = document.getElementById("qrVerifyingSpinner");
+const qrVerifyIcon = document.getElementById("qrVerifyIcon");
+const qrVerifyingText = document.getElementById("qrVerifyingText");
+
+let pendingQrType = "";
+
+function showQrScreen(screen) {
+
+    [qrMainContent, qrVerifyingScreen].forEach(
+        s => s.classList.remove("active")
+    );
+
+    screen.classList.add("active");
+
+}
+
+/*
+Business receiving accounts.
+NOTE: These are just numbers, not registered merchant
+accounts, so the QR below cannot make GCash/Maya
+auto-fill a transfer — see the on-screen disclaimer.
+*/
+const PAYMENT_ACCOUNTS = {
+    gcash: { number: "09161450983", name: "FoodSprint", label: "📱 GCash Payment" },
+    maya: { number: "09310318357", name: "FoodSprint", label: "🟢 Maya Payment" }
+};
+
+let pendingOrderRef = "";
+let pendingReceiptDataUrl = "";
+
+function openQrPaymentModal(type, amount) {
+
+    const account = PAYMENT_ACCOUNTS[type];
+
+    pendingQrType = type;
+    pendingOrderRef = "ORD-" + Date.now();
+    pendingReceiptDataUrl = "";
+
+    // Always start back on the QR/receipt screen, not a leftover verifying state
+    showQrScreen(qrMainContent);
+    qrVerifyingSpinner.style.display = "block";
+    qrVerifyIcon.style.display = "none";
+
+    qrModalTitle.textContent = account.label;
+    qrModalAmount.textContent = `Amount to pay: ₱${amount.toFixed(2)}`;
+    qrAccountNumber.textContent = account.number;
+    qrAccountName.textContent = account.name;
+    qrAccountAmount.textContent = `₱${amount.toFixed(2)}`;
+    qrRefNumber.textContent = pendingOrderRef;
+
+    const qrPayload =
+        `${type.toUpperCase()} PAYMENT\n` +
+        `To: ${account.number} (${account.name})\n` +
+        `Amount: PHP ${amount.toFixed(2)}\n` +
+        `Ref: ${pendingOrderRef}`;
+
+    qrCodeCanvas.innerHTML = "";
+
+    try {
+
+        if (typeof QRCode === "undefined") {
+            throw new Error("QRCode library not loaded");
+        }
+
+        new QRCode(qrCodeCanvas, {
+            text: qrPayload,
+            width: 190,
+            height: 190,
+            colorDark: "#2B2D42",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.L
+        });
+
+    } catch (error) {
+
+        // Never let a QR generation failure block the modal itself —
+        // fall back to manual payment details instead.
+        console.error("QR generation failed:", error);
+
+        qrCodeCanvas.innerHTML =
+            `<p style="font-size:12px;color:var(--gray);max-width:190px;">Couldn't generate a QR code. Please pay manually using the details below.</p>`;
+
+    }
+
+    // Reset receipt upload state
+    receiptInput.value = "";
+    receiptPreviewWrapper.style.display = "none";
+    receiptPreview.src = "";
+    confirmQrPaymentBtn.disabled = true;
+
+    qrPaymentModal.classList.add("active");
+
+}
+
+// Read, downscale, and preview the uploaded receipt image
+receiptInput.addEventListener("change", () => {
+
+    const file = receiptInput.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file (screenshot or photo of your receipt).");
+        receiptInput.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+
+        const img = new Image();
+
+        img.onload = () => {
+
+            // Downscale before storing so it stays small in localStorage
+            const maxWidth = 700;
+            const scale = Math.min(1, maxWidth / img.width);
+
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            pendingReceiptDataUrl = canvas.toDataURL("image/jpeg", 0.7);
+
+            receiptPreview.src = pendingReceiptDataUrl;
+            receiptPreviewWrapper.style.display = "block";
+            confirmQrPaymentBtn.disabled = false;
+
+        };
+
+        img.src = event.target.result;
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+removeReceiptBtn.addEventListener("click", () => {
+
+    pendingReceiptDataUrl = "";
+    receiptInput.value = "";
+    receiptPreviewWrapper.style.display = "none";
+    confirmQrPaymentBtn.disabled = true;
+
+});
+
+confirmQrPaymentBtn.addEventListener("click", () => {
+
+    if (!pendingReceiptDataUrl) {
+        alert("Please upload a screenshot of your payment receipt before confirming.");
+        return;
+    }
+
+    const providerName =
+        pendingQrType === "maya" ? "Maya" : "GCash";
+
+    // Show the "verifying" screen — simulates the moment a real payment
+    // gateway would be checking the transaction with GCash/Maya's servers
+    // (in production this would be a webhook callback, not a fixed delay).
+    qrVerifyingSpinner.style.display = "block";
+    qrVerifyIcon.style.display = "none";
+    qrVerifyingText.textContent = `Verifying your payment with ${providerName}...`;
+
+    showQrScreen(qrVerifyingScreen);
+
+    setTimeout(() => {
+
+        // Simulated confirmation received
+        qrVerifyingSpinner.style.display = "none";
+        qrVerifyIcon.style.display = "block";
+        qrVerifyingText.textContent = "Payment Confirmed!";
+
+        setTimeout(() => {
+
+            qrPaymentModal.classList.remove("active");
+
+            finalizeOrder({
+                refNumber: pendingOrderRef,
+                receiptDataUrl: pendingReceiptDataUrl,
+                pendingVerification: false
+            });
+
+        }, 900);
+
+    }, 2000);
+
+});
+
+cancelQrPaymentBtn.addEventListener("click", () => {
+
+    qrPaymentModal.classList.remove("active");
+
+});
 
 // Cancel button inside payment modal
 if (cancelPaymentBtn) {
@@ -870,8 +1154,114 @@ if (cancelPaymentBtn) {
     };
 }
 
+/* ==========================================
+   PAYPAL — SIMULATED REDIRECT CHECKOUT
+   (login screen -> review/pay screen)
+========================================== */
+
+const paypalModal = document.getElementById("paypalModal");
+const paypalRedirectScreen = document.getElementById("paypalRedirectScreen");
+const paypalLoginScreen = document.getElementById("paypalLoginScreen");
+const paypalReviewScreen = document.getElementById("paypalReviewScreen");
+const paypalEmailInput = document.getElementById("paypalEmailInput");
+const paypalPasswordInput = document.getElementById("paypalPasswordInput");
+const paypalLoginBtn = document.getElementById("paypalLoginBtn");
+const paypalCancelLoginBtn = document.getElementById("paypalCancelLoginBtn");
+const paypalReviewEmail = document.getElementById("paypalReviewEmail");
+const paypalReviewAddress = document.getElementById("paypalReviewAddress");
+const paypalReviewAmount = document.getElementById("paypalReviewAmount");
+const paypalPayNowBtn = document.getElementById("paypalPayNowBtn");
+const paypalCancelReviewBtn = document.getElementById("paypalCancelReviewBtn");
+
+let pendingPaypalEmail = "";
+
+function showPaypalScreen(screen) {
+
+    [paypalRedirectScreen, paypalLoginScreen, paypalReviewScreen].forEach(
+        s => s.classList.remove("active")
+    );
+
+    screen.classList.add("active");
+
+}
+
+function closePaypalModal() {
+
+    paypalModal.classList.remove("active");
+
+}
+
+function openFakePaypalCheckout(amount) {
+
+    // Reset fields from any previous attempt
+    paypalEmailInput.value = "";
+    paypalPasswordInput.value = "";
+    pendingPaypalEmail = "";
+
+    showPaypalScreen(paypalRedirectScreen);
+
+    paypalModal.classList.add("active");
+
+    // Brief "redirecting to paypal.com" transition, like a real redirect
+    setTimeout(() => {
+
+        showPaypalScreen(paypalLoginScreen);
+
+    }, 1100);
+
+}
+
+paypalLoginBtn.addEventListener("click", () => {
+
+    const email = paypalEmailInput.value.trim();
+    const password = paypalPasswordInput.value;
+
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!isValidEmail) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+
+    if (!password) {
+        alert("Please enter your password.");
+        return;
+    }
+
+    pendingPaypalEmail = email;
+
+    paypalReviewEmail.textContent = email;
+    paypalReviewAddress.textContent = pendingAddress;
+    paypalReviewAmount.textContent = `₱${pendingTotal.toFixed(2)}`;
+
+    showPaypalScreen(paypalReviewScreen);
+
+});
+
+paypalCancelLoginBtn.addEventListener("click", closePaypalModal);
+paypalCancelReviewBtn.addEventListener("click", closePaypalModal);
+
+paypalPayNowBtn.addEventListener("click", () => {
+
+    closePaypalModal();
+
+    finalizeOrder({
+        extraDetail: pendingPaypalEmail
+    });
+
+});
+
+
 // Helper function to complete order execution
-function finalizeOrder(extraDetail) {
+function finalizeOrder(options = {}) {
+
+    const {
+        extraDetail = "",
+        refNumber = "",
+        receiptDataUrl = "",
+        pendingVerification = false
+    } = options;
+
     const paymentContext = new PaymentContext();
     paymentContext.setStrategy(pendingStrategy);
 
@@ -882,20 +1272,36 @@ function finalizeOrder(extraDetail) {
         paymentResult.message += ` Account/Ref: ${extraDetail}`;
     }
 
+    if (pendingVerification) {
+        paymentResult.message += " We'll confirm your order once we verify your uploaded receipt.";
+    }
+
     const subtotal = cart.getSubtotal();
+    const finalRefNumber = refNumber || ("ORD-" + Date.now());
+
+    // Remember this address for next time
+    localStorage.setItem("lastDeliveryAddress", pendingAddress);
 
     generateOrderSummary(
         pendingItems,
         subtotal,
         DELIVERY_FEE,
         pendingTotal,
-        paymentResult
+        paymentResult,
+        finalRefNumber,
+        receiptDataUrl,
+        pendingVerification,
+        pendingAddress
     );
 
     saveLastOrder(
         pendingItems,
         pendingTotal,
-        paymentResult.method
+        paymentResult.method,
+        finalRefNumber,
+        receiptDataUrl,
+        pendingVerification,
+        pendingAddress
     );
 
     cart.clearCart();
@@ -920,7 +1326,15 @@ function generateOrderSummary(
 
     total,
 
-    payment
+    payment,
+
+    refNumber = "",
+
+    receiptDataUrl = "",
+
+    pendingVerification = false,
+
+    address = ""
 
 ) {
 
@@ -973,6 +1387,17 @@ function generateOrderSummary(
 
     finalOrderSummary.innerHTML += `
 
+        ${
+            address
+                ? `
+        <div class="summary-item">
+            <span>📍 Deliver to</span>
+            <span>${escapeHtml(address)}</span>
+        </div>
+        `
+                : ""
+        }
+
         <div class="summary-item">
 
             <span>
@@ -1012,6 +1437,16 @@ function generateOrderSummary(
 
         </div>
 
+        ${
+            refNumber
+                ? `
+        <div class="summary-item">
+            <span>Reference No.</span>
+            <span>${refNumber}</span>
+        </div>
+        `
+                : ""
+        }
 
         <div class="summary-total">
 
@@ -1026,6 +1461,29 @@ function generateOrderSummary(
         </div>
 
     `;
+
+
+    if (pendingVerification) {
+
+        finalOrderSummary.innerHTML += `
+            <div class="pending-badge">
+                ⏳ Pending Verification
+            </div>
+        `;
+
+    }
+
+
+    if (receiptDataUrl) {
+
+        finalOrderSummary.innerHTML += `
+            <div class="summary-receipt">
+                <p>Uploaded receipt:</p>
+                <img src="${receiptDataUrl}" alt="Uploaded payment receipt">
+            </div>
+        `;
+
+    }
 
 
     orderMessage.textContent =
@@ -1045,15 +1503,26 @@ function saveLastOrder(
 
     total,
 
-    paymentMethod
+    paymentMethod,
+
+    refNumber = "",
+
+    receiptDataUrl = "",
+
+    pendingVerification = false,
+
+    address = ""
 
 ) {
 
     const order = {
 
         orderNumber:
-            "ORD-" +
-            Date.now(),
+            refNumber ||
+            ("ORD-" + Date.now()),
+
+        deliveryAddress:
+            address,
 
         items:
             JSON.parse(
@@ -1068,6 +1537,14 @@ function saveLastOrder(
         paymentMethod:
             paymentMethod,
 
+        status:
+            pendingVerification
+                ? "Pending Verification"
+                : "Confirmed",
+
+        receipt:
+            receiptDataUrl || null,
+
         date:
             new Date()
                 .toLocaleString()
@@ -1075,15 +1552,29 @@ function saveLastOrder(
     };
 
 
-    localStorage.setItem(
+    try {
 
-        "lastRestaurantOrder",
+        localStorage.setItem(
 
-        JSON.stringify(
-            order
-        )
+            "lastRestaurantOrder",
 
-    );
+            JSON.stringify(
+                order
+            )
+
+        );
+
+    } catch (error) {
+
+        // Receipt image may be too large for localStorage — retry without it
+        order.receipt = null;
+
+        localStorage.setItem(
+            "lastRestaurantOrder",
+            JSON.stringify(order)
+        );
+
+    }
 
 }
 

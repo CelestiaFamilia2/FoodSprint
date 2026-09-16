@@ -26,7 +26,7 @@ class CashPaymentStrategy {
 
             method: "Cash",
 
-            icon: "💵",
+            icon: "banknote",
 
             message:
                 `Please prepare ₱${amount.toFixed(2)} for cash payment.`
@@ -50,10 +50,10 @@ class GCashPaymentStrategy {
 
             method: "GCash",
 
-            icon: "📱",
+            icon: "smartphone",
 
             message:
-                `Please pay ₱${amount.toFixed(2)} using GCash.`
+                `We received your GCash payment info for ₱${amount.toFixed(2)}.`
 
         };
 
@@ -74,10 +74,10 @@ class MayaPaymentStrategy {
 
             method: "Maya",
 
-            icon: "🟢",
+            icon: "smartphone",
 
             message:
-                `Please pay ₱${amount.toFixed(2)} using Maya.`
+                `We received your Maya payment info for ₱${amount.toFixed(2)}.`
 
         };
 
@@ -98,7 +98,7 @@ class CardPaymentStrategy {
 
             method: "Card",
 
-            icon: "💳",
+            icon: "card",
 
             message:
                 `₱${amount.toFixed(2)} will be charged to your card.`
@@ -122,7 +122,7 @@ class PayPalPaymentStrategy {
 
             method: "PayPal",
 
-            icon: "🅿️",
+            icon: "paypalGlyph",
 
             message:
                 `Please confirm ₱${amount.toFixed(2)} using your PayPal account.`
