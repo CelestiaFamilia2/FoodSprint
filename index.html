@@ -165,22 +165,32 @@
             </div>
 
 
-            <!-- DELIVERY ADDRESS -->
+            <!-- PERSONAL INFORMATION -->
 
-            <div class="delivery-section">
+            <div class="personal-info-section">
 
-                <h3>📍 Delivery Address</h3>
+                <button
+                    type="button"
+                    id="personalInfoButton"
+                    class="personal-info-btn">
 
-                <textarea
-                    id="deliveryAddress"
-                    class="delivery-input"
-                    rows="2"
-                    placeholder="House/Unit No., Street, Barangay, City"></textarea>
+                    <span class="personal-info-btn-icon">👤</span>
+
+                    <span class="personal-info-btn-text">
+                        <strong>Personal Information</strong>
+                        <span id="personalInfoSummary" class="personal-info-summary">
+                            Add your name, phone &amp; address
+                        </span>
+                    </span>
+
+                    <span class="personal-info-btn-arrow">›</span>
+
+                </button>
 
                 <span
-                    id="deliveryAddressError"
+                    id="personalInfoError"
                     class="delivery-error">
-                    Please enter your delivery address.
+                    Please complete your personal information.
                 </span>
 
             </div>
@@ -297,6 +307,84 @@
                 Done
 
             </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= PERSONAL INFORMATION MODAL ================= -->
+
+    <div class="modal-overlay" id="personalInfoModal">
+
+        <div class="order-modal">
+
+            <div class="modal-scroll">
+
+            <h2>👤 Personal Information</h2>
+
+            <p>Please provide your details for delivery.</p>
+
+            <div class="form-group">
+
+                <label for="customerNameInput">Customer Name</label>
+
+                <input
+                    type="text"
+                    id="customerNameInput"
+                    class="delivery-input"
+                    placeholder="Juan Dela Cruz">
+
+                <span
+                    id="customerNameError"
+                    class="delivery-error">
+                    Please enter your name.
+                </span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="customerPhoneInput">Phone Number</label>
+
+                <input
+                    type="tel"
+                    id="customerPhoneInput"
+                    class="delivery-input"
+                    placeholder="09XXXXXXXXX">
+
+                <span
+                    id="customerPhoneError"
+                    class="delivery-error">
+                    Please enter a valid phone number.
+                </span>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="deliveryAddress"> Delivery Address</label>
+
+                <textarea
+                    id="deliveryAddress"
+                    class="delivery-input"
+                    rows="2"
+                    placeholder="House/Unit No., Street, Barangay, City"></textarea>
+
+                <span
+                    id="deliveryAddressError"
+                    class="delivery-error">
+                    Please enter your delivery address.
+                </span>
+
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button id="savePersonalInfoBtn" class="modal-button" style="flex: 1;">Save</button>
+                <button id="cancelPersonalInfoBtn" class="clear-btn" style="flex: 1; margin-top: 0;">Cancel</button>
+            </div>
 
             </div>
 
@@ -475,7 +563,7 @@
                 </p>
 
                 <div class="receipt-upload">
-                    <label for="receiptInput" class="receipt-label">📎 Upload your payment receipt / screenshot</label>
+                    <label for="receiptInput" class="receipt-label">Upload your payment receipt / screenshot</label>
                     <input type="file" id="receiptInput" accept="image/*">
 
                     <div id="receiptPreviewWrapper" class="receipt-preview-wrapper" style="display:none;">

@@ -123,6 +123,66 @@ const deliveryAddressError =
     );
 
 
+const personalInfoButton =
+    document.getElementById(
+        "personalInfoButton"
+    );
+
+
+const personalInfoSummary =
+    document.getElementById(
+        "personalInfoSummary"
+    );
+
+
+const personalInfoError =
+    document.getElementById(
+        "personalInfoError"
+    );
+
+
+const personalInfoModal =
+    document.getElementById(
+        "personalInfoModal"
+    );
+
+
+const customerNameInput =
+    document.getElementById(
+        "customerNameInput"
+    );
+
+
+const customerNameError =
+    document.getElementById(
+        "customerNameError"
+    );
+
+
+const customerPhoneInput =
+    document.getElementById(
+        "customerPhoneInput"
+    );
+
+
+const customerPhoneError =
+    document.getElementById(
+        "customerPhoneError"
+    );
+
+
+const savePersonalInfoBtn =
+    document.getElementById(
+        "savePersonalInfoBtn"
+    );
+
+
+const cancelPersonalInfoBtn =
+    document.getElementById(
+        "cancelPersonalInfoBtn"
+    );
+
+
 /* ==========================================
    SETTINGS
 ========================================== */
@@ -131,20 +191,61 @@ const DELIVERY_FEE = 40;
 
 
 /* ==========================================
-   DELIVERY ADDRESS
+   PERSONAL INFORMATION
+   (Customer Name, Phone Number, Address)
 ========================================== */
 
-// Prefill with the last address the customer used, if any
-const savedAddress =
-    localStorage.getItem("lastDeliveryAddress");
+// Prefill with the last personal info the customer used, if any
+const savedCustomerInfoRaw =
+    localStorage.getItem("customerInfo");
 
-if (savedAddress) {
+if (savedCustomerInfoRaw) {
 
-    deliveryAddressInput.value = savedAddress;
+    try {
+
+        const savedCustomerInfo =
+            JSON.parse(savedCustomerInfoRaw);
+
+        customerNameInput.value =
+            savedCustomerInfo.name || "";
+
+        customerPhoneInput.value =
+            savedCustomerInfo.phone || "";
+
+        deliveryAddressInput.value =
+            savedCustomerInfo.address || "";
+
+    } catch (error) {
+
+        // Ignore malformed saved data
+
+    }
 
 }
 
-// Clear the error state as soon as the user starts typing
+// Clear the error state on each field as soon as the user starts typing
+customerNameInput.addEventListener("input", () => {
+
+    if (customerNameInput.value.trim()) {
+
+        customerNameInput.classList.remove("input-error");
+        customerNameError.classList.remove("visible");
+
+    }
+
+});
+
+customerPhoneInput.addEventListener("input", () => {
+
+    if (customerPhoneInput.value.trim()) {
+
+        customerPhoneInput.classList.remove("input-error");
+        customerPhoneError.classList.remove("visible");
+
+    }
+
+});
+
 deliveryAddressInput.addEventListener("input", () => {
 
     if (deliveryAddressInput.value.trim()) {
@@ -156,9 +257,70 @@ deliveryAddressInput.addEventListener("input", () => {
 
 });
 
+
+function getCustomerName() {
+
+    return customerNameInput.value.trim();
+
+}
+
+function getCustomerPhone() {
+
+    return customerPhoneInput.value.trim();
+
+}
+
 function getDeliveryAddress() {
 
     return deliveryAddressInput.value.trim();
+
+}
+
+
+function validateCustomerName() {
+
+    const name = getCustomerName();
+
+    if (!name) {
+
+        customerNameInput.classList.add("input-error");
+        customerNameError.classList.add("visible");
+
+        return false;
+
+    }
+
+    customerNameInput.classList.remove("input-error");
+    customerNameError.classList.remove("visible");
+
+    return true;
+
+}
+
+function validateCustomerPhone() {
+
+    const phone = getCustomerPhone();
+
+    // Accepts local (09XXXXXXXXX) or international (+63XXXXXXXXXX)
+    // style Philippine mobile numbers, digits/spaces/dashes allowed.
+    const isValidPhone =
+        /^(\+63|0)9\d{9}$/.test(
+            phone.replace(/[\s-]/g, "")
+        );
+
+    if (!phone || !isValidPhone) {
+
+        customerPhoneInput.classList.add("input-error");
+        customerPhoneError.classList.add("visible");
+
+        return false;
+
+    }
+
+    customerPhoneInput.classList.remove("input-error");
+    customerPhoneError.classList.remove("visible");
+
+    return true;
 
 }
 
@@ -171,8 +333,6 @@ function validateDeliveryAddress() {
         deliveryAddressInput.classList.add("input-error");
         deliveryAddressError.classList.add("visible");
 
-        deliveryAddressInput.focus();
-
         return false;
 
     }
@@ -183,6 +343,151 @@ function validateDeliveryAddress() {
     return true;
 
 }
+
+// Runs all three field validations (so every error shows at once)
+// and returns whether everything is filled in correctly.
+function validatePersonalInfo() {
+
+    const isNameValid = validateCustomerName();
+    const isPhoneValid = validateCustomerPhone();
+    const isAddressValid = validateDeliveryAddress();
+
+    return isNameValid && isPhoneValid && isAddressValid;
+
+}
+
+function isPersonalInfoComplete() {
+
+    return Boolean(
+        getCustomerName() &&
+        getCustomerPhone() &&
+        getDeliveryAddress()
+    );
+
+}
+
+
+/* ================= SUMMARY ON THE BUTTON ================= */
+
+function updatePersonalInfoSummary() {
+
+    if (isPersonalInfoComplete()) {
+
+        personalInfoSummary.textContent =
+            `${getCustomerName()} · ${getCustomerPhone()} · ${getDeliveryAddress()}`;
+
+        personalInfoSummary.classList.add("complete");
+
+    } else {
+
+        personalInfoSummary.textContent =
+            "Add your name, phone & address";
+
+        personalInfoSummary.classList.remove("complete");
+
+    }
+
+}
+
+updatePersonalInfoSummary();
+
+
+/* ================= OPEN / CLOSE MODAL ================= */
+
+// Remembers the last saved values so Cancel can restore them
+let savedPersonalInfoSnapshot = {
+    name: getCustomerName(),
+    phone: getCustomerPhone(),
+    address: getDeliveryAddress()
+};
+
+function openPersonalInfoModal() {
+
+    savedPersonalInfoSnapshot = {
+        name: getCustomerName(),
+        phone: getCustomerPhone(),
+        address: getDeliveryAddress()
+    };
+
+    personalInfoModal.classList.add("active");
+
+}
+
+function closePersonalInfoModal() {
+
+    personalInfoModal.classList.remove("active");
+
+}
+
+personalInfoButton.addEventListener(
+    "click",
+    openPersonalInfoModal
+);
+
+cancelPersonalInfoBtn.addEventListener(
+    "click",
+    () => {
+
+        // Restore the previously saved values, discarding any edits
+        customerNameInput.value = savedPersonalInfoSnapshot.name;
+        customerPhoneInput.value = savedPersonalInfoSnapshot.phone;
+        deliveryAddressInput.value = savedPersonalInfoSnapshot.address;
+
+        customerNameInput.classList.remove("input-error");
+        customerNameError.classList.remove("visible");
+
+        customerPhoneInput.classList.remove("input-error");
+        customerPhoneError.classList.remove("visible");
+
+        deliveryAddressInput.classList.remove("input-error");
+        deliveryAddressError.classList.remove("visible");
+
+        closePersonalInfoModal();
+
+    }
+);
+
+personalInfoModal.addEventListener(
+    "click",
+    event => {
+
+        if (event.target === personalInfoModal) {
+
+            closePersonalInfoModal();
+
+        }
+
+    }
+);
+
+savePersonalInfoBtn.addEventListener(
+    "click",
+    () => {
+
+        if (!validatePersonalInfo()) {
+
+            return;
+
+        }
+
+        localStorage.setItem(
+            "customerInfo",
+            JSON.stringify({
+                name: getCustomerName(),
+                phone: getCustomerPhone(),
+                address: getDeliveryAddress()
+            })
+        );
+
+        personalInfoButton.classList.remove("input-error");
+        personalInfoError.classList.remove("visible");
+
+        updatePersonalInfoSummary();
+
+        closePersonalInfoModal();
+
+    }
+);
 
 
 /* ==========================================
@@ -862,6 +1167,8 @@ let pendingTotal = 0;
 let pendingItems = [];
 let pendingStrategy = null;
 let pendingAddress = "";
+let pendingCustomerName = "";
+let pendingCustomerPhone = "";
 let currentSelectedPaymentType = "";
 
 checkoutButton.addEventListener(
@@ -874,15 +1181,28 @@ checkoutButton.addEventListener(
             return;
         }
 
-        if (!validateDeliveryAddress()) {
+        if (!isPersonalInfoComplete()) {
+
+            openPersonalInfoModal();
+            validatePersonalInfo();
+
+            personalInfoButton.classList.add("input-error");
+            personalInfoError.classList.add("visible");
+
             return;
+
         }
+
+        personalInfoButton.classList.remove("input-error");
+        personalInfoError.classList.remove("visible");
 
         const subtotal = cart.getSubtotal();
         pendingTotal = subtotal + DELIVERY_FEE;
         pendingItems = items;
         pendingStrategy = getSelectedPaymentStrategy();
         pendingAddress = getDeliveryAddress();
+        pendingCustomerName = getCustomerName();
+        pendingCustomerPhone = getCustomerPhone();
 
         currentSelectedPaymentType = document.querySelector('input[name="payment"]:checked').value;
 
@@ -1231,7 +1551,10 @@ paypalLoginBtn.addEventListener("click", () => {
     pendingPaypalEmail = email;
 
     paypalReviewEmail.textContent = email;
-    paypalReviewAddress.textContent = pendingAddress;
+    paypalReviewAddress.textContent =
+        pendingCustomerName
+            ? `${pendingCustomerName} — ${pendingAddress}`
+            : pendingAddress;
     paypalReviewAmount.textContent = `₱${pendingTotal.toFixed(2)}`;
 
     showPaypalScreen(paypalReviewScreen);
@@ -1279,8 +1602,15 @@ function finalizeOrder(options = {}) {
     const subtotal = cart.getSubtotal();
     const finalRefNumber = refNumber || ("ORD-" + Date.now());
 
-    // Remember this address for next time
-    localStorage.setItem("lastDeliveryAddress", pendingAddress);
+    // Remember this customer's info for next time
+    localStorage.setItem(
+        "customerInfo",
+        JSON.stringify({
+            name: pendingCustomerName,
+            phone: pendingCustomerPhone,
+            address: pendingAddress
+        })
+    );
 
     generateOrderSummary(
         pendingItems,
@@ -1291,7 +1621,9 @@ function finalizeOrder(options = {}) {
         finalRefNumber,
         receiptDataUrl,
         pendingVerification,
-        pendingAddress
+        pendingAddress,
+        pendingCustomerName,
+        pendingCustomerPhone
     );
 
     saveLastOrder(
@@ -1301,7 +1633,9 @@ function finalizeOrder(options = {}) {
         finalRefNumber,
         receiptDataUrl,
         pendingVerification,
-        pendingAddress
+        pendingAddress,
+        pendingCustomerName,
+        pendingCustomerPhone
     );
 
     cart.clearCart();
@@ -1334,7 +1668,11 @@ function generateOrderSummary(
 
     pendingVerification = false,
 
-    address = ""
+    address = "",
+
+    customerName = "",
+
+    customerPhone = ""
 
 ) {
 
@@ -1386,6 +1724,28 @@ function generateOrderSummary(
 
 
     finalOrderSummary.innerHTML += `
+
+        ${
+            customerName
+                ? `
+        <div class="summary-item">
+            <span>👤 Name</span>
+            <span>${escapeHtml(customerName)}</span>
+        </div>
+        `
+                : ""
+        }
+
+        ${
+            customerPhone
+                ? `
+        <div class="summary-item">
+            <span>📞 Phone</span>
+            <span>${escapeHtml(customerPhone)}</span>
+        </div>
+        `
+                : ""
+        }
 
         ${
             address
@@ -1511,7 +1871,11 @@ function saveLastOrder(
 
     pendingVerification = false,
 
-    address = ""
+    address = "",
+
+    customerName = "",
+
+    customerPhone = ""
 
 ) {
 
@@ -1520,6 +1884,12 @@ function saveLastOrder(
         orderNumber:
             refNumber ||
             ("ORD-" + Date.now()),
+
+        customerName:
+            customerName,
+
+        customerPhone:
+            customerPhone,
 
         deliveryAddress:
             address,
