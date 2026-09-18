@@ -745,7 +745,7 @@ function showTemporaryButtonMessage(id) {
 
 
                 button.innerHTML =
-                    "✓ Added";
+                    "<i class=\"bi bi-check-circle-fill\"></i> Added";
 
 
                 setTimeout(
@@ -814,7 +814,7 @@ function displayCartItems() {
             <div class="empty-cart">
 
                 <div>
-                    🛒
+                    <i class="bi bi-cart3"></i>
                 </div>
 
                 <h3>
@@ -908,7 +908,7 @@ function displayCartItems() {
                     class="remove-item"
                     onclick="removeItem(${item.id})">
 
-                    🗑️
+                    <i class="bi bi-trash3"></i>
 
                 </button>
 
@@ -1295,8 +1295,8 @@ accounts, so the QR below cannot make GCash/Maya
 auto-fill a transfer — see the on-screen disclaimer.
 */
 const PAYMENT_ACCOUNTS = {
-    gcash: { number: "09123456789", name: "FoodSprint", label: "📱 GCash Payment" },
-    maya: { number: "09123456789", name: "FoodSprint", label: "🟢 Maya Payment" }
+    gcash: { number: "09123456789", name: "FoodSprint", label: "<i class=\"bi bi-phone-fill\"></i> GCash Payment" },
+    maya: { number: "09123456789", name: "FoodSprint", label: "<i class=\"bi bi-phone-fill\"></i> Maya Payment" }
 };
 
 let pendingOrderRef = "";
@@ -1315,7 +1315,7 @@ function openQrPaymentModal(type, amount) {
     qrVerifyingSpinner.style.display = "block";
     qrVerifyIcon.style.display = "none";
 
-    qrModalTitle.textContent = account.label;
+    qrModalTitle.innerHTML = account.label;
     qrModalAmount.textContent = `Amount to pay: ₱${amount.toFixed(2)}`;
     qrAccountNumber.textContent = account.number;
     qrAccountName.textContent = account.name;
@@ -1735,7 +1735,7 @@ function generateOrderSummary(
             customerName
                 ? `
         <div class="summary-item">
-            <span>👤 Name</span>
+            <span><i class="bi bi-person-fill"></i> Name</span>
             <span>${escapeHtml(customerName)}</span>
         </div>
         `
@@ -1746,7 +1746,7 @@ function generateOrderSummary(
             customerPhone
                 ? `
         <div class="summary-item">
-            <span>📞 Phone</span>
+            <span><i class="bi bi-telephone-fill"></i> Phone</span>
             <span>${escapeHtml(customerPhone)}</span>
         </div>
         `
@@ -1757,7 +1757,7 @@ function generateOrderSummary(
             address
                 ? `
         <div class="summary-item">
-            <span>📍 Deliver to</span>
+            <span><i class="bi bi-geo-alt-fill"></i> Deliver to</span>
             <span>${escapeHtml(address)}</span>
         </div>
         `
@@ -1793,7 +1793,7 @@ function generateOrderSummary(
         <div class="summary-item">
 
             <span>
-                ${payment.icon}
+                <i class="bi ${payment.icon}"></i>
                 Payment
             </span>
 

@@ -7,6 +7,7 @@
     <title>FoodSprint</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
@@ -23,7 +24,7 @@
         </div>
 
         <button class="cart-btn" id="cartButton">
-            🛒 Cart
+            <i class="bi bi-cart3"></i> Cart
             <span id="cartCount">0</span>
         </button>
     </header>
@@ -33,7 +34,7 @@
     <section class="hero">
 
         <div class="hero-content">
-            <span class="hero-badge">🔥 Fresh & Delicious</span>
+            <span class="hero-badge"><i class="bi bi-fire"></i> Fresh & Delicious</span>
 
             <h2>
                 Crave It. Order It.
@@ -78,25 +79,25 @@
                 <button
                     class="category-btn active"
                     data-category="all">
-                    🍽️ All
+                    <i class="bi bi-grid-fill"></i> All
                 </button>
 
                 <button
                     class="category-btn"
                     data-category="food">
-                    🍔 Food
+                    <i class="bi bi-egg-fried"></i> Food
                 </button>
 
                 <button
                     class="category-btn"
                     data-category="drink">
-                    🥤 Drinks
+                    <i class="bi bi-cup-straw"></i> Drinks
                 </button>
 
                 <button
                     class="category-btn"
                     data-category="dessert">
-                    🍰 Desserts
+                    <i class="bi bi-cake2-fill"></i> Desserts
                 </button>
 
             </div>
@@ -127,7 +128,7 @@
         <div class="cart-header">
 
             <div>
-                <h2>🛒 Your Order</h2>
+                <h2><i class="bi bi-cart3"></i> Your Order</h2>
                 <p>Review your selected items</p>
             </div>
 
@@ -177,7 +178,7 @@
                     id="personalInfoButton"
                     class="personal-info-btn">
 
-                    <span class="personal-info-btn-icon">👤</span>
+                    <span class="personal-info-btn-icon"><i class="bi bi-person-fill"></i></span>
 
                     <span class="personal-info-btn-text">
                         <strong>Personal Information</strong>
@@ -215,7 +216,7 @@
                             checked>
 
                         <span>
-                            💵 Cash
+                            <i class="bi bi-cash-coin"></i> Cash
                         </span>
                     </label>
 
@@ -226,7 +227,7 @@
                             value="gcash">
 
                         <span>
-                            📱 GCash
+                            <i class="bi bi-phone-fill"></i> GCash
                         </span>
                     </label>
 
@@ -237,7 +238,7 @@
                             value="maya">
 
                         <span>
-                            💳 Maya
+                            <i class="bi bi-phone-fill"></i> Maya
                         </span>
                     </label>
 
@@ -248,7 +249,7 @@
                             value="paypal">
 
                         <span>
-                            🅿️ PayPal
+                            <i class="bi bi-paypal"></i> PayPal
                         </span>
                     </label>
 
@@ -289,7 +290,7 @@
             <div class="modal-scroll">
 
             <div class="success-icon">
-                ✓
+                <i class="bi bi-check-circle-fill"></i>
             </div>
 
             <h2>Order Successful!</h2>
@@ -326,7 +327,7 @@
 
             <div class="modal-scroll">
 
-            <h2>👤 Personal Information</h2>
+            <h2><i class="bi bi-person-fill"></i> Personal Information</h2>
 
             <p>Please provide your details for delivery.</p>
 
@@ -471,7 +472,7 @@
                 <button id="paypalLoginBtn" class="paypal-btn paypal-btn-blue">Log In</button>
                 <button id="paypalCancelLoginBtn" class="paypal-link-btn">Cancel and return to FoodSprint</button>
 
-                <p class="paypal-disclaimer">⚠️ Simulated PayPal screen for demo purposes — this is not the real PayPal site. Please don't enter real credentials.</p>
+                <p class="paypal-disclaimer"><i class="bi bi-exclamation-triangle-fill"></i> Simulated PayPal screen for demo purposes — this is not the real PayPal site. Please don't enter real credentials.</p>
 
             </div>
 
@@ -529,7 +530,7 @@
             <!-- Main content: QR, account details, receipt upload -->
             <div class="qr-screen active" id="qrMainContent">
 
-                <h2 id="qrModalTitle">📱 GCash Payment</h2>
+                <h2 id="qrModalTitle"><i class="bi bi-phone-fill"></i> GCash Payment</h2>
                 <p id="qrModalAmount">Amount to pay: ₱0.00</p>
 
                 <div class="qr-wrapper">
@@ -562,7 +563,7 @@
                 </div>
 
                 <p class="qr-note">
-                    ⚠️ Demo QR — not linked to a real merchant account.
+                    <i class="bi bi-exclamation-triangle-fill"></i> Demo QR — not linked to a real merchant account.
                 </p>
 
                 <div class="receipt-upload">
@@ -571,7 +572,7 @@
 
                     <div id="receiptPreviewWrapper" class="receipt-preview-wrapper" style="display:none;">
                         <img id="receiptPreview" class="receipt-preview" alt="Uploaded receipt preview">
-                        <button type="button" id="removeReceiptBtn" class="remove-receipt-btn">✕ Remove receipt</button>
+                        <button type="button" id="removeReceiptBtn" class="remove-receipt-btn"><i class="bi bi-x-lg"></i> Remove receipt</button>
                     </div>
                 </div>
 
@@ -587,7 +588,7 @@
 
                 <div class="qr-spinner" id="qrVerifyingSpinner"></div>
 
-                <div class="qr-verify-icon" id="qrVerifyIcon" style="display:none;">✅</div>
+                <div class="qr-verify-icon" id="qrVerifyIcon" style="display:none;"><i class="bi bi-patch-check-fill"></i></div>
 
                 <p class="qr-verify-text" id="qrVerifyingText">Verifying your payment with GCash...</p>
 
