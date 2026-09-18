@@ -223,6 +223,15 @@ a {
     background:
         linear-gradient(
             135deg,
+            rgba(255, 215, 181, 0.55) 0%,
+            rgba(255, 233, 168, 0.55) 55%,
+            rgba(255, 201, 168, 0.55) 100%
+        ),
+        url("images/food-bg.jpg")
+        center / cover
+        no-repeat,
+        linear-gradient(
+            135deg,
             #FFD7B5 0%,
             #FFE9A8 55%,
             #FFC9A8 100%
@@ -330,6 +339,19 @@ a {
             0 12px 10px
             rgba(43, 45, 66, 0.15)
         );
+}
+
+.hero-emoji img {
+    width: 300px;
+    height: 300px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+}
+
+.hero-emoji-fallback {
+    display: block;
 }
 
 @keyframes floating {
