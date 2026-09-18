@@ -95,6 +95,9 @@ class CartManager {
                 type:
                     item.type,
 
+                image:
+                    item.image,
+
                 emoji:
                     item.emoji,
 

@@ -5,6 +5,13 @@ MENU DATA
 
 All menu items are created using
 RestaurantFactory.createItem().
+
+Each item's "image" path points to a file
+inside the /images folder. Add a matching
+image file for each item (same file name)
+so it displays on the menu and in the cart.
+If an image is missing or fails to load,
+the emoji is shown instead as a fallback.
 */
 
 
@@ -32,6 +39,8 @@ const menuItems = [
             "Cheese"
         ],
 
+        "images/spaghetti.jpg",
+
         "🍝"
 
     ),
@@ -53,6 +62,8 @@ const menuItems = [
             "Seasoning",
             "Cooking Oil"
         ],
+
+        "images/fried-chicken.jpg",
 
         "🍗"
 
@@ -77,6 +88,8 @@ const menuItems = [
             "Burger Bun"
         ],
 
+        "images/cheeseburger.jpg",
+
         "🍔"
 
     ),
@@ -100,6 +113,8 @@ const menuItems = [
             "Vegetables"
         ],
 
+        "images/burrito.jpg",
+
         "🌯"
 
     ),
@@ -122,6 +137,8 @@ const menuItems = [
             "Pepperoni"
         ],
 
+        "images/pizza.jpg",
+
         "🍕"
 
     ),
@@ -142,6 +159,8 @@ const menuItems = [
             "Salt",
             "Cooking Oil"
         ],
+
+        "images/french-fries.jpg",
 
         "🍟"
 
@@ -166,6 +185,8 @@ const menuItems = [
             "Purified Water"
         ],
 
+        "images/water.jpg",
+
         "💧"
 
     ),
@@ -185,6 +206,8 @@ const menuItems = [
             "Carbonated Water",
             "Lemon-Lime Flavor"
         ],
+
+        "images/sprite.jpg",
 
         "🥤"
 
@@ -208,6 +231,8 @@ const menuItems = [
             "Lemon"
         ],
 
+        "images/iced-tea.jpg",
+
         "🧋"
 
     ),
@@ -227,6 +252,8 @@ const menuItems = [
             "Fresh Orange",
             "Ice"
         ],
+
+        "images/orange-juice.jpg",
 
         "🍊"
 
@@ -248,6 +275,8 @@ const menuItems = [
             "Water",
             "Sugar"
         ],
+
+        "images/coffee.jpg",
 
         "☕"
 
@@ -275,6 +304,8 @@ const menuItems = [
             "Vanilla"
         ],
 
+        "images/ice-cream.jpg",
+
         "🍨"
 
     ),
@@ -298,6 +329,8 @@ const menuItems = [
             "Sugar"
         ],
 
+        "images/chocolate-cake.jpg",
+
         "🍰"
 
     ),
@@ -319,6 +352,8 @@ const menuItems = [
             "Milk",
             "Chocolate"
         ],
+
+        "images/donut.jpg",
 
         "🍩"
 
@@ -342,6 +377,8 @@ const menuItems = [
             "Cream"
         ],
 
+        "images/cupcake.jpg",
+
         "🧁"
 
     ),
@@ -362,6 +399,8 @@ const menuItems = [
             "Butter",
             "Chocolate Chips"
         ],
+
+        "images/cookies.jpg",
 
         "🍪"
 

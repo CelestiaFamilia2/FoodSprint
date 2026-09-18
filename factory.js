@@ -21,6 +21,7 @@ class MenuItem {
         price,
         ingredients,
         category,
+        image,
         emoji
     ) {
 
@@ -29,6 +30,7 @@ class MenuItem {
         this.price = price;
         this.ingredients = ingredients;
         this.category = category;
+        this.image = image;
         this.emoji = emoji;
 
     }
@@ -45,6 +47,7 @@ class Food extends MenuItem {
         name,
         price,
         ingredients,
+        image,
         emoji
     ) {
 
@@ -54,6 +57,7 @@ class Food extends MenuItem {
             price,
             ingredients,
             "food",
+            image,
             emoji
         );
 
@@ -73,6 +77,7 @@ class Drink extends MenuItem {
         name,
         price,
         ingredients,
+        image,
         emoji
     ) {
 
@@ -82,6 +87,7 @@ class Drink extends MenuItem {
             price,
             ingredients,
             "drink",
+            image,
             emoji
         );
 
@@ -101,6 +107,7 @@ class Dessert extends MenuItem {
         name,
         price,
         ingredients,
+        image,
         emoji
     ) {
 
@@ -110,6 +117,7 @@ class Dessert extends MenuItem {
             price,
             ingredients,
             "dessert",
+            image,
             emoji
         );
 
@@ -132,6 +140,7 @@ class RestaurantFactory {
         name,
         price,
         ingredients,
+        image,
         emoji
     ) {
 
@@ -144,6 +153,7 @@ class RestaurantFactory {
                     name,
                     price,
                     ingredients,
+                    image,
                     emoji
                 );
 
@@ -155,6 +165,7 @@ class RestaurantFactory {
                     name,
                     price,
                     ingredients,
+                    image,
                     emoji
                 );
 
@@ -166,6 +177,7 @@ class RestaurantFactory {
                     name,
                     price,
                     ingredients,
+                    image,
                     emoji
                 );
 

@@ -555,7 +555,10 @@ function displayMenu(
 
                 <div class="item-image">
 
-                    ${item.emoji}
+                    <img
+                        src="${item.image}"
+                        alt="${escapeHtml(item.name)}"
+                        onerror="this.replaceWith(Object.assign(document.createElement('span'), { className: 'item-image-fallback', textContent: '${item.emoji}' }))">
 
                 </div>
 
@@ -850,7 +853,10 @@ function displayCartItems() {
 
                 <div class="cart-item-emoji">
 
-                    ${item.emoji}
+                    <img
+                        src="${item.image}"
+                        alt="${escapeHtml(item.name)}"
+                        onerror="this.replaceWith(Object.assign(document.createElement('span'), { className: 'item-image-fallback', textContent: '${item.emoji}' }))">
 
                 </div>
 
