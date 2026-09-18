@@ -281,7 +281,7 @@ a {
 }
 
 .hero p {
-    color: #505165;
+    color: #0d0e1c;
 
     max-width: 500px;
 
@@ -326,11 +326,14 @@ a {
 }
 
 .hero-emoji {
+    position: relative;
+
     font-size: 300px;
     margin-bottom: 50px;
+
     animation:
-        floating
-        3s
+        heroPulse
+        2.6s
         infinite
         ease-in-out;
 
@@ -342,27 +345,43 @@ a {
 }
 
 .hero-emoji img {
-    width: 300px;
-    height: 300px;
+    width: 460px;
+    height: 460px;
 
-    object-fit: cover;
-
-    border-radius: 50%;
+    object-fit: contain;
 }
 
 .hero-emoji-fallback {
     display: block;
 }
 
-@keyframes floating {
+/*
+   Gentle "sizzling / fresh off the grill" pulse:
+   the burger softly scales up and back down while
+   its drop-shadow glow breathes with it, instead of
+   bobbing up and down or dripping.
+*/
+@keyframes heroPulse {
 
     0%,
     100% {
-        transform: translateY(0);
+        transform: scale(1);
+
+        filter:
+            drop-shadow(
+                0 12px 10px
+                rgba(43, 45, 66, 0.15)
+            );
     }
 
     50% {
-        transform: translateY(-15px);
+        transform: scale(1.06);
+
+        filter:
+            drop-shadow(
+                0 16px 22px
+                rgba(240, 165, 0, 0.35)
+            );
     }
 }
 
